@@ -12,9 +12,8 @@ public class BoltCenter : MonoBehaviour {
 		myRigidbody = GetComponent<Rigidbody2D> ();
 		myRigidbody.AddRelativeForce (Vector2.up * boltCenterSpeed, ForceMode2D.Impulse);
 	}
-	
-	// Update is called once per frame
+
 	void Update () {
-		
+		Destroy(gameObject, 2f); // Drstroy object after 2 seconds
 	}
 }
