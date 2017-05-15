@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyBulletsDestroyer : MonoBehaviour {
-	
+public class Destroyer : MonoBehaviour {
+
+	public float lifetime;
+
 	void Update () {
-		Destroy (gameObject, 10f);
+		Destroy (gameObject, lifetime);
 	}
 }
