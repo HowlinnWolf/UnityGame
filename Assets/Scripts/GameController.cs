@@ -2,34 +2,44 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class GameController : MonoBehaviour {
 
-	public GameObject hazard;
+	public bool IsEndless = false;
 	public Transform spawnLine;
-	public float range = 270f; // 270
-	public int hazardCount;
-	public float spawnWait;
-	public float waveStartWait;
-	public float waveEndtWait;
-
+	public float range = 265f; // 270 - max
+	public WaveController[] waves;
 	private int playerHealth;
 
 	void Start() {
 		GameObject Player = GameObject.Find ("Player");
 		PlayerManager playerManager = Player.GetComponent<PlayerManager>();
 		playerHealth = playerManager.health;
-		StartCoroutine (SpawnWaves ());
+		StartCoroutine (GameBody ());
 	}
 
-	IEnumerator SpawnWaves() {
-		yield return new WaitForSeconds (waveStartWait);	// Wait in the level beginning
-		while (playerHealth > 0){
-			for (int i = 0; i < hazardCount; i++) {
-				Vector3 spawnPosition = new Vector3 (Random.Range (-range, range), spawnLine.position.y, spawnLine.position.z);
-				Instantiate (hazard, spawnPosition, spawnLine.rotation);
-				yield return new WaitForSeconds (spawnWait); // Wait between spawns
+	IEnumerator GameBody(){
+		for (int k = 0; k < waves.Length; k++){
+			yield return new WaitForSeconds (waves[k].waveStartWait);	// Wait in the level beginning
+			if (IsEndless) {
+				while (playerHealth > 0) {
+					for (k = 0; k < waves.Length; k++){
+						for (int i = 0; i < waves[k].enemiesInWave; i++) {
+							Vector3 spawnPosition = new Vector3 (Random.Range (-range, range), spawnLine.position.y, spawnLine.position.z);
+							Instantiate (waves[k].hazards[Random.Range(0, waves[k].hazards.Length)], spawnPosition, spawnLine.rotation);
+							yield return new WaitForSeconds (waves[k].spawnWait); // Wait between spawns
+						}
+						yield return new WaitForSeconds (waves[k].waveEndWait);	// Wait after wave
+					}
+				}
+			} else {
+				for (int i = 0; i < waves[k].enemiesInWave; i++) {
+					Vector3 spawnPosition = new Vector3 (Random.Range (-range, range), spawnLine.position.y, spawnLine.position.z);
+					Instantiate (waves[k].hazards[Random.Range(0, waves[k].hazards.Length)], spawnPosition, spawnLine.rotation);
+					yield return new WaitForSeconds (waves[k].spawnWait); // Wait between spawns
+				}
+				yield return new WaitForSeconds (waves[k].waveEndWait);	// Wait after wave
 			}
-			yield return new WaitForSeconds (waveEndtWait);	// Wait after wave
 		}
 	}
 }
