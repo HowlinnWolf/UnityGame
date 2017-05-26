@@ -5,6 +5,7 @@ using UnityEngine;
 public class EnemyManager : MonoBehaviour {
 
 	public int health;
+	public GameObject explosion;
 
 	public void TakeDamage (int damage) {
 		health = health - damage;
@@ -14,6 +15,7 @@ public class EnemyManager : MonoBehaviour {
 	}
 
 	public void Die () {
+		Instantiate (explosion, transform.position, transform.rotation);
 		Destroy (gameObject);
 	}
 }

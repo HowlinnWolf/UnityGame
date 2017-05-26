@@ -10,7 +10,9 @@ public enum enemyType
 public class EnemyController : MonoBehaviour {
 
 	public enemyType enemyType;
+	[Range(0, 10)]
 	public float bulletsFireRate = 0;
+	[Range(0, 10)]
 	public float lasersFireRate = 0;
 	public int gunsRotation = 0;
 
@@ -19,60 +21,84 @@ public class EnemyController : MonoBehaviour {
 
 	private GameObject shot;     // For bullet guns
 	private GameObject laser;	 // For laser guns
-	private float wideGunsFireRate = 1.5f;  // Wide guns shoot once per 0.3 seconds (when fire rate level is 0)
+	private float wideGunsFireRate = 1f;  // Wide guns shoot once per 1 seconds (when fire rate level is 0)
 	private float frontGunsFireRate = 2f; // Front guns shoot once per 1.5 seconds (when fire rate level is 0)
-	private float wideNextFire;
-	private float frontNextFire;
+
+	private int enemyHealth;
 
 	private Transform gunSpawn;   // Middle gun shot spawn point
 	private Transform lGunSpawn;  // Left wide gun shot spawn point
 	private Transform rGunSpawn;  // Right wide gun shot spawn point
+	private Transform lFGunSpawn; // Left front gun
+	private Transform rFGunSpawn; // Right front gun
 
 	void Start() {
-		//shotSound = AudioSource.FindObjectOfType<AudioSource> ();
-		//laserSound = AudioSource.FindObjectOfType<AudioSource> ();
+		EnemyManager enemyManager = this.GetComponent<EnemyManager>();
+		enemyHealth = enemyManager.health;
 		shot = Resources.Load<GameObject> ("b_enemyBullet");
 		laser = Resources.Load<GameObject> ("b_enemyLaser");
 		// Picking shot spawn points:
 		if (enemyType == enemyType.light) {
 			gunSpawn = transform.Find ("Gun");
+			StartCoroutine (LightShoot (3, 5));
 		} else if (enemyType == enemyType.medium) {
 			lGunSpawn = transform.Find ("Gun_L");
 			rGunSpawn = transform.Find ("Gun_R");
+			StartCoroutine (MediumShoot (1, 0));
 		} else if (enemyType == enemyType.heavy) {
-			gunSpawn = transform.Find ("Gun");
 			lGunSpawn = transform.Find ("Gun_L");
 			rGunSpawn = transform.Find ("Gun_R");
+			lFGunSpawn = transform.Find ("FGun_L");
+			rFGunSpawn = transform.Find ("FGun_R");
+			StartCoroutine (HeavyFrontShoot (1, 0));
+			StartCoroutine (HeavyWideShoot (2, 2));
 		}
 	}
 
-	void Update() {
-		if (enemyType == enemyType.light) {
-			if (Time.time > wideNextFire) {
-				wideNextFire = Time.time + wideGunsFireRate - bulletsFireRate / 40;
+	IEnumerator LightShoot(int shotsInShot, int shotsWait) {
+		while (enemyHealth > 0) {
+			for (int i = 0; i < shotsInShot; i++) {
 				Instantiate (shot, gunSpawn.position, gunSpawn.rotation);
 				shotSound.Play ();
-			} 
-		} else if (enemyType == enemyType.medium) {
-			if (Time.time > frontNextFire) {
-				frontNextFire = Time.time + frontGunsFireRate - lasersFireRate / 20;
+				yield return new WaitForSeconds (wideGunsFireRate - bulletsFireRate/10);
+			}
+			yield return new WaitForSeconds (shotsWait);
+		}
+	}
+
+	IEnumerator MediumShoot(int shotsInShot, int shotsWait) {
+		while (enemyHealth > 0) {
+			for (int i = 0; i < shotsInShot; i++) {
 				Instantiate (laser, lGunSpawn.position, lGunSpawn.rotation);
 				Instantiate (laser, rGunSpawn.position, rGunSpawn.rotation);
 				laserSound.Play ();
-				
+				yield return new WaitForSeconds (frontGunsFireRate - lasersFireRate/10);
 			}
-		} else if (enemyType == enemyType.heavy) {
-			if (Time.time > wideNextFire) {
-				wideNextFire = Time.time + wideGunsFireRate - lasersFireRate / 20;
-				Instantiate (laser, gunSpawn.position, gunSpawn.rotation);
-				shotSound.Play ();
-			} 
-			if (Time.time > frontNextFire) {
-				frontNextFire = Time.time + frontGunsFireRate - bulletsFireRate / 40;
+			yield return new WaitForSeconds (shotsWait);
+		}
+	}
+
+	IEnumerator HeavyWideShoot(int shotsInShot, int shotsWait) {
+		while (enemyHealth > 0) {
+			for (int i = 0; i < shotsInShot; i++) {
 				Instantiate (shot, lGunSpawn.position, Quaternion.Euler(new Vector3(0, 0, gunsRotation)));
 				Instantiate (shot, rGunSpawn.position, Quaternion.Euler(new Vector3(0, 0, -gunsRotation)));
 				laserSound.Play ();
+				yield return new WaitForSeconds (wideGunsFireRate - bulletsFireRate/10);
 			}
+			yield return new WaitForSeconds (shotsWait);
+		}
+	}
+
+	IEnumerator HeavyFrontShoot(int shotsInShot, int shotsWait) {
+		while (enemyHealth > 0) {
+			for (int i = 0; i < shotsInShot; i++) {
+				Instantiate (laser, lFGunSpawn.position, lFGunSpawn.rotation);
+				Instantiate (laser, rFGunSpawn.position, rFGunSpawn.rotation);
+				laserSound.Play ();
+				yield return new WaitForSeconds (frontGunsFireRate - lasersFireRate/10);
+			}
+			yield return new WaitForSeconds (shotsWait);
 		}
 	}
 }
