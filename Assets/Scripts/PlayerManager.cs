@@ -10,6 +10,7 @@ public class PlayerManager : MonoBehaviour {
 
 	public int health = 500;
 	public GameObject explosion;
+	public bool IsShooting = true;
 
 	public AudioSource shot;
 	public AudioSource laser;
@@ -39,20 +40,20 @@ public class PlayerManager : MonoBehaviour {
 
 	void Update ()
 	{
-		// Shooting with fire rate:
-		if (Time.time > wideNextFire)
-		{
-			wideNextFire = Time.time + wideGunsFireRate - fireRate/40;
-			Instantiate(wideShot, lWideGunSpawn.position, lWideGunSpawn.rotation);
-			Instantiate(wideShot, rWideGunSpawn.position, rWideGunSpawn.rotation);
-			shot.Play ();
-		} 
-		if (Time.time > frontNextFire)
-		{
-			frontNextFire = Time.time + frontGunsFireRate - fireRate/20;
-			Instantiate(frontShot, lFrontGunSpawn.position, lFrontGunSpawn.rotation);
-			Instantiate(frontShot, rFrontGunSpawn.position, rFrontGunSpawn.rotation);
-			laser.Play ();
+		if (IsShooting) {
+			// Shooting with fire rate:
+			if (Time.time > wideNextFire) {
+				wideNextFire = Time.time + wideGunsFireRate - fireRate / 40;
+				Instantiate (wideShot, lWideGunSpawn.position, lWideGunSpawn.rotation);
+				Instantiate (wideShot, rWideGunSpawn.position, rWideGunSpawn.rotation);
+				shot.Play ();
+			} 
+			if (Time.time > frontNextFire) {
+				frontNextFire = Time.time + frontGunsFireRate - fireRate / 20;
+				Instantiate (frontShot, lFrontGunSpawn.position, lFrontGunSpawn.rotation);
+				Instantiate (frontShot, rFrontGunSpawn.position, rFrontGunSpawn.rotation);
+				laser.Play ();
+			}
 		}
 	}
 
