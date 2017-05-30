@@ -9,7 +9,9 @@ public class PlayerManager : MonoBehaviour {
 	public int armor = 0;   // TODO
 
 	public int health = 500;
+	public GameObject HPBar;
 	public GameObject explosion;
+	public GameObject messageWindow;
 	public bool IsShooting = true;
 
 	public AudioSource shot;
@@ -28,7 +30,11 @@ public class PlayerManager : MonoBehaviour {
 	private float wideNextFire;
 	private float frontNextFire;
 
+	private FadeInOut fadeInOut;
+	public GameObject fadingImage;
+
 	void Start () {
+		fadeInOut = fadingImage.GetComponent<FadeInOut> ();
 		wideShot = Resources.Load<GameObject> ("b_blueBullet");
 		frontShot = Resources.Load<GameObject> ("b_blueLaser");
 		// Looking for guns to attach spawn points
@@ -59,6 +65,12 @@ public class PlayerManager : MonoBehaviour {
 
 	public void TakeDamage (int damage) {
 		health = health - damage;
+
+		HPBarController HP = HPBar.GetComponent<HPBarController> ();
+		HP.curHealth = health;
+		HP.labelText.text = health.ToString();
+		HP.MoveHealthBar ();
+
 		if (health <= 0) {
 			Die ();
 		}
@@ -66,6 +78,8 @@ public class PlayerManager : MonoBehaviour {
 
 	public void Die () {
 		Instantiate (explosion, transform.position, transform.rotation);
+		messageWindow.SetActive (true);
+		fadeInOut.Fade (0.8f, 1f);
 		Destroy (gameObject);
 	}
 

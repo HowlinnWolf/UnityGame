@@ -41,15 +41,20 @@ public class Buttons : MonoBehaviour {
 		}
 	}
 
-	public void Play(string scene){
+	public void PlayLevel(string scene){
 		SceneManager.LoadScene(scene);
+	}
+
+	public void ReplayLevel(){
+		Scene scene = SceneManager.GetActiveScene();
+		SceneManager.LoadScene (scene.name);
 	}
 
 	public void BackToMenu(){
 		Time.timeScale = 1f;
 		AudioListener.volume = Mathf.Lerp (AudioListener.volume, 0.8f, 0.2f);
 		paused = false;
-		Play("MainMenu");
+		PlayLevel("MainMenu");
 	}
 
 	public void QuitApp(){ 
