@@ -32,9 +32,13 @@ public class PlayerManager : MonoBehaviour {
 
 	private FadeInOut fadeInOut;
 	public GameObject fadingImage;
+	private HPBarController HP;
 
 	void Start () {
 		fadeInOut = fadingImage.GetComponent<FadeInOut> ();
+		HP = HPBar.GetComponent<HPBarController> ();
+		HP.curHealth = health;
+		HP.labelText.text = health.ToString();
 		wideShot = Resources.Load<GameObject> ("b_blueBullet");
 		frontShot = Resources.Load<GameObject> ("b_blueLaser");
 		// Looking for guns to attach spawn points
@@ -66,7 +70,6 @@ public class PlayerManager : MonoBehaviour {
 	public void TakeDamage (int damage) {
 		health = health - damage;
 
-		HPBarController HP = HPBar.GetComponent<HPBarController> ();
 		HP.curHealth = health;
 		HP.labelText.text = health.ToString();
 		HP.MoveHealthBar ();
