@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class BulletManager : MonoBehaviour {
 
-	int mainDamage = 0;
-	int takenDamage;
-	PlayerManager playerManager;
+	private int mainDamage = 0;
+	private int takenDamage;
+	private PlayerManager playerManager;
 
 	void Start () {
 		GameObject Player = GameObject.Find ("Player");

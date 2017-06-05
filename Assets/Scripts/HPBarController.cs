@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class HPBarController : MonoBehaviour {
 
 	public int curHealth;
-	private int maxHealth;
+	public int maxHealth;
 	private float hpBar;
 	public Text labelText;
 
@@ -15,6 +15,7 @@ public class HPBarController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+
 		GameObject player = GameObject.Find ("Player");
 		playerManager = player.GetComponent<PlayerManager> ();
 		image = this.GetComponent<Image> ();

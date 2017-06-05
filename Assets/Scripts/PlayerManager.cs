@@ -5,10 +5,10 @@ using UnityEngine;
 public class PlayerManager : MonoBehaviour {
 
 	public float fireRate = 0;  // Fire rate level (0-10)
-	public int damage = 0;		// Projectile damage level
-	public int armor = 0;   // TODO
+	public int damage = 0;		// Projectile damage level (0-10)
+	public int armor = 0;   	// Armor level (0-10)
 
-	public int health = 500;
+	public int health;
 	public GameObject HPBar;
 	public GameObject explosion;
 	public GameObject messageWindow;
@@ -33,12 +33,26 @@ public class PlayerManager : MonoBehaviour {
 	private FadeInOut fadeInOut;
 	public GameObject fadingImage;
 	private HPBarController HP;
+	private ScoreController scoreController;
+	private bool hasScore = false;
 
 	void Start () {
+		if (GameObject.Find ("ScoreField"))
+			hasScore = true;
+		if (hasScore) {
+			GameObject scoreField = GameObject.Find ("ScoreField");
+			scoreController = scoreField.GetComponent<ScoreController> ();
+		}
+		if (armor > 0)
+			health = 50 * armor;
+		else
+			health = 20;
 		fadeInOut = fadingImage.GetComponent<FadeInOut> ();
 		HP = HPBar.GetComponent<HPBarController> ();
+		HP.maxHealth = health;
 		HP.curHealth = health;
 		HP.labelText.text = health.ToString();
+		HP.MoveHealthBar ();
 		wideShot = Resources.Load<GameObject> ("b_blueBullet");
 		frontShot = Resources.Load<GameObject> ("b_blueLaser");
 		// Looking for guns to attach spawn points
@@ -71,7 +85,10 @@ public class PlayerManager : MonoBehaviour {
 		health = health - damage;
 
 		HP.curHealth = health;
-		HP.labelText.text = health.ToString();
+		if (health > 0)
+			HP.labelText.text = health.ToString ();
+		else
+			HP.labelText.text = "0";
 		HP.MoveHealthBar ();
 
 		if (health <= 0) {
@@ -80,6 +97,8 @@ public class PlayerManager : MonoBehaviour {
 	}
 
 	public void Die () {
+		if (hasScore)
+			scoreController.SaveHighscore ();
 		Instantiate (explosion, transform.position, transform.rotation);
 		messageWindow.SetActive (true);
 		fadeInOut.Fade (0.8f, 1f);
